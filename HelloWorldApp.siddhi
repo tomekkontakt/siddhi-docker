@@ -1,0 +1,12 @@
+@App:name("HelloWorldApp")
+
+@source(type = 'http', receiver.url = "http://0.0.0.0:8006/cargo",@map(type = 'json'))
+define stream CargoStream (weight int);
+
+@sink(type='log', prefix='LOGGER')
+define stream OutputStream(weight int, totalWeight long, averageWeight double);
+
+@info(name='HelloWorldQuery')
+from CargoStream#window.length(3)
+select weight, sum(weight) as totalWeight, avg(weight) as averageWeight
+insert into OutputStream;
